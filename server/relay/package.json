@@ -1,0 +1,10 @@
+{
+  "name": "switch-lan-relay",
+  "version": "1.0.0",
+  "description": "UDP Broadcast Relay for Nintendo Switch LAN Play",
+  "main": "relay.js",
+  "scripts": {
+    "start": "node relay.js"
+  },
+  "dependencies": {}
+}
