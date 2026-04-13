@@ -236,7 +236,7 @@ class ProcessManager {
                 const output = data.toString().trim();
                 this._sendLog(`[LAN-PLAY] ${output}`, 'info');
 
-                if (output.includes('listening') || output.includes('connected') || output.includes('Ready')) {
+                if (output.includes('listening') || output.includes('connected') || output.includes('Ready') || output.includes('pcap loop start') || output.includes('Server IP')) {
                     this._sendStatus('lanplay', 'active', 'Ativo');
                     resolve();
                 }
@@ -262,7 +262,10 @@ class ProcessManager {
             });
 
             // Resolve após 3s se não houver sinal explícito de ready
-            setTimeout(() => resolve(), 3000);
+            setTimeout(() => {
+                this._sendStatus('lanplay', 'active', 'Ativo');
+                resolve();
+            }, 3000);
         });
     }
 
