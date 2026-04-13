@@ -1,12 +1,16 @@
 {
-  "name": "client",
+  "name": "billplay",
   "version": "1.0.0",
-  "description": "",
-  "main": "client.js",
+  "description": "Zero-config LAN Play client for Nintendo Switch over Headscale VPN",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "dev": "electron . --dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": ["switch", "lan-play", "headscale", "vpn", "gaming"],
+  "author": "ocnaibill",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^35.0.0"
+  }
 }
