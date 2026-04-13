@@ -1,7 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const ProcessManager = require('./src/processes');
 
 let mainWindow;
+let processManager;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -23,6 +25,9 @@ function createWindow() {
 
     mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
 
+    // Init process manager with the window reference
+    processManager = new ProcessManager(mainWindow);
+
     // Open devtools in dev mode
     if (process.argv.includes('--dev')) {
         mainWindow.webContents.openDevTools({ mode: 'detach' });
@@ -33,7 +38,7 @@ function createWindow() {
     });
 }
 
-// Window control handlers (frameless window)
+// --- Window control handlers ---
 ipcMain.on('window-minimize', () => {
     if (mainWindow) mainWindow.minimize();
 });
@@ -48,10 +53,35 @@ ipcMain.on('window-close', () => {
     if (mainWindow) mainWindow.close();
 });
 
+// --- Connection handlers ---
+ipcMain.handle('connect', async () => {
+    try {
+        await processManager.connect();
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('disconnect', async () => {
+    try {
+        await processManager.disconnect();
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// --- App lifecycle ---
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
+    if (processManager) processManager.cleanup();
     app.quit();
+});
+
+app.on('before-quit', () => {
+    if (processManager) processManager.cleanup();
 });
 
 app.on('activate', () => {
