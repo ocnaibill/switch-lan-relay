@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
+    <title>BillPlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Custom Titlebar -->
+    <div id="titlebar">
+        <div id="titlebar-drag">
+            <span id="titlebar-logo">🎮</span>
+            <span id="titlebar-title">BillPlay</span>
+        </div>
+        <div id="titlebar-controls">
+            <button id="btn-minimize" class="titlebar-btn" aria-label="Minimize">
+                <svg width="12" height="12" viewBox="0 0 12 12"><rect y="5" width="12" height="2" rx="1" fill="currentColor"/></svg>
+            </button>
+            <button id="btn-maximize" class="titlebar-btn" aria-label="Maximize">
+                <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </button>
+            <button id="btn-close" class="titlebar-btn titlebar-btn-close" aria-label="Close">
+                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="app">
+
+        <!-- Header Section -->
+        <section id="hero">
+            <div id="hero-glow"></div>
+            <h1 id="app-title">Bill<span class="accent">Play</span></h1>
+            <p id="app-subtitle">Conecte, jogue, domine — sem configuração.</p>
+        </section>
+
+        <!-- Status Card -->
+        <section id="status-card">
+            <div id="status-indicator">
+                <div id="status-dot"></div>
+                <span id="status-text">Desconectado</span>
+            </div>
+            <div id="status-details">
+                <div class="detail-item">
+                    <span class="detail-label">VPN</span>
+                    <span class="detail-value" id="vpn-status">—</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">LAN Play</span>
+                    <span class="detail-value" id="lanplay-status">—</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Servidor</span>
+                    <span class="detail-value" id="server-status">—</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Connect Button -->
+        <section id="action-section">
+            <button id="btn-connect" class="btn-primary">
+                <span id="btn-connect-text">Conectar</span>
+                <div id="btn-spinner" class="spinner hidden"></div>
+            </button>
+        </section>
+
+        <!-- Log Console -->
+        <section id="log-section">
+            <div id="log-header">
+                <span>📋 Console</span>
+                <button id="btn-clear-log" class="btn-ghost">Limpar</button>
+            </div>
+            <div id="log-output">
+                <p class="log-entry log-info">BillPlay v1.0.0 — Pronto.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
