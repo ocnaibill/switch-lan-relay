@@ -21,7 +21,7 @@
   ],
   "author": "ocnaibill",
   "license": "ISC",
-  "repository": "github:ocnaibill/switch-lan-relay",
+  "repository": "github:ocnaibill/SwitchPlay",
   "devDependencies": {
     "electron": "^35.0.0",
     "electron-builder": "^26.8.1"

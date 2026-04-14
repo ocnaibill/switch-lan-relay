@@ -90,8 +90,8 @@ Headscale must be accessible over HTTPS. Use a reverse proxy (Nginx, Traefik, Ca
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/ocnaibill/switch-lan-relay.git
-cd switch-lan-relay/client
+git clone https://github.com/ocnaibill/SwitchPlay.git
+cd SwitchPlay/client
 npm install
 ```
 
@@ -145,7 +145,7 @@ Compiled installers will appear in the `client/dist/` directory.
 ## 🤝 Project Structure
 
 ```
-switch-lan-relay/
+SwitchPlay/
 ├── LICENSE               # GPL-3.0
 ├── README.md             # This file
 ├── README.pt-BR.md       # Portuguese version
