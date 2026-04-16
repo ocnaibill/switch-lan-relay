@@ -46,6 +46,9 @@
         ]
       }
     ],
+    "asarUnpack": [
+      "bin/**/*"
+    ],
     "win": {
       "target": [
         {
