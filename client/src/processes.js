@@ -242,7 +242,10 @@ class ProcessManager {
 
       // Tentar a arquitetura nativa primeiro, depois fallback
       const candidates = [];
-      const binDir = path.join(__dirname, "..", "bin");
+      const isPackaged = require("electron").app?.isPackaged ?? false;
+      const binDir = isPackaged 
+        ? path.join(process.resourcesPath, "bin") 
+        : path.join(__dirname, "..", "bin");
 
       if (platform === "darwin") {
         // Em macOS, tentar native primeiro, depois x86_64 (Rosetta)
