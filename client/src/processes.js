@@ -235,11 +235,35 @@ class ProcessManager {
   // ==========================================
   _startLanPlay() {
     return new Promise((resolve, reject) => {
-      const lanPlayPath = this._getBinPath("lan-play");
       const serverUrl = this.currentConfig.lanPlay || "100.64.0.2:11451";
+      const platform = os.platform();
+      const arch = os.arch();
+      const goArch = arch === "x64" ? "amd64" : arch;
 
-      if (!fs.existsSync(lanPlayPath)) {
-        const err = `Binário lan-play não encontrado: ${lanPlayPath}`;
+      // Tentar a arquitetura nativa primeiro, depois fallback
+      const candidates = [];
+      const binDir = path.join(__dirname, "..", "bin");
+      
+      if (platform === "darwin") {
+        // Em macOS, tentar native primeiro, depois x86_64 (Rosetta)
+        if (arch === "arm64") {
+          candidates.push(path.join(binDir, "lan-play-darwin-arm64"));
+          candidates.push(path.join(binDir, "lan-play-darwin-amd64")); // Fallback via Rosetta
+        } else if (arch === "x64") {
+          candidates.push(path.join(binDir, "lan-play-darwin-amd64"));
+          candidates.push(path.join(binDir, "lan-play-darwin-arm64")); // Try native if available
+        }
+      } else if (platform === "linux") {
+        candidates.push(path.join(binDir, "lan-play-linux-amd64"));
+      } else if (platform === "win32") {
+        candidates.push(path.join(binDir, "lan-play-win32-amd64.exe"));
+      }
+
+      // Filtrar apenas os que existem
+      const existingCandidates = candidates.filter(f => fs.existsSync(f));
+
+      if (existingCandidates.length === 0) {
+        const err = `Nenhum binário lan-play encontrado. Candidatos: ${candidates.join(", ")}`;
         this._sendLog(err, "error");
         return reject(new Error(err));
       }
@@ -247,56 +271,95 @@ class ProcessManager {
       this._sendLog(`Iniciando LAN Play → ${serverUrl}`, "info");
       this._sendStatus("lanplay", "connecting", "Iniciando...");
 
-      this.lanPlayProcess = spawn(
-        lanPlayPath,
-        ["--relay-server-addr", serverUrl],
-        {
-          stdio: ["pipe", "pipe", "pipe"],
-          windowsHide: true,
-        },
-      );
+      // Tentar cada candidato até um funcionar
+      this._trySpawnLanPlayWithFallback(existingCandidates, serverUrl, 0, resolve, reject);
+    });
+  }
 
-      this.lanPlayProcess.stdout.on("data", (data) => {
-        const output = data.toString().trim();
-        this._sendLog(`[LAN-PLAY] ${output}`, "info");
+  _trySpawnLanPlayWithFallback(candidates, serverUrl, index, resolve, reject) {
+    if (index >= candidates.length) {
+      const err = `Falhou ao iniciar LAN Play com todos os binários: ${candidates.join(", ")}`;
+      this._sendLog(err, "error");
+      this._sendStatus("lanplay", "error", "Erro ao iniciar");
+      return reject(new Error(err));
+    }
 
-        if (
-          output.includes("listening") ||
+    const lanPlayPath = candidates[index];
+    const isLastCandidate = index === candidates.length - 1;
+
+    this._sendLog(`Tentando LAN Play: ${path.basename(lanPlayPath)}`, "vpn");
+
+    this.lanPlayProcess = spawn(
+      lanPlayPath,
+      ["--relay-server-addr", serverUrl],
+      {
+        stdio: ["pipe", "pipe", "pipe"],
+        windowsHide: true,
+      },
+    );
+
+    let resolved = false;
+
+    this.lanPlayProcess.stdout.on("data", (data) => {
+      const output = data.toString().trim();
+      this._sendLog(`[LAN-PLAY] ${output}`, "info");
+
+      if (
+        !resolved &&
+        (output.includes("listening") ||
           output.includes("connected") ||
           output.includes("Ready") ||
           output.includes("pcap loop start") ||
-          output.includes("Server IP")
-        ) {
-          this._sendStatus("lanplay", "active", "Ativo");
-          resolve();
-        }
-      });
-
-      this.lanPlayProcess.stderr.on("data", (data) => {
-        this._sendLog(`[LAN-PLAY] ${data.toString().trim()}`, "warning");
-      });
-
-      this.lanPlayProcess.on("error", (err) => {
-        this._sendLog(`LAN Play erro: ${err.message}`, "error");
-        this._sendStatus("lanplay", "error", "Erro");
-        reject(err);
-      });
-
-      this.lanPlayProcess.on("close", (code) => {
-        this._sendLog(
-          `LAN Play encerrado (código: ${code})`,
-          code === 0 ? "info" : "error",
-        );
-        this.lanPlayProcess = null;
-        this._sendStatus("lanplay", "error", "Parado");
-      });
-
-      // Resolve após 3s se não houver sinal explícito de ready
-      setTimeout(() => {
+          output.includes("Server IP"))
+      ) {
+        resolved = true;
         this._sendStatus("lanplay", "active", "Ativo");
         resolve();
-      }, 3000);
+      }
     });
+
+    this.lanPlayProcess.stderr.on("data", (data) => {
+      this._sendLog(`[LAN-PLAY] ${data.toString().trim()}`, "warning");
+    });
+
+    this.lanPlayProcess.on("error", (err) => {
+      if (!resolved && !isLastCandidate) {
+        // Não é o último, tenta o próximo
+        this._sendLog(
+          `${path.basename(lanPlayPath)} falhou (${err.message}), tentando próximo...`,
+          "warning"
+        );
+        this.lanPlayProcess.kill();
+        this._trySpawnLanPlayWithFallback(candidates, serverUrl, index + 1, resolve, reject);
+      } else {
+        // É o último ou já resolveu
+        if (!resolved) {
+          this._sendLog(`LAN Play erro: ${err.message}`, "error");
+          this._sendStatus("lanplay", "error", "Erro");
+          reject(err);
+        }
+      }
+    });
+
+    this.lanPlayProcess.on("close", (code) => {
+      this._sendLog(
+        `LAN Play encerrado (código: ${code})`,
+        code === 0 ? "info" : "error",
+      );
+      this.lanPlayProcess = null;
+      if (!resolved) {
+        this._sendStatus("lanplay", "error", "Parado");
+      }
+    });
+
+    // Resolve após 3s se não houver sinal explícito de ready
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        this._sendStatus("lanplay", "active", "Ativo");
+        resolve();
+      }
+    }, 3000);
   }
 
   // ==========================================
