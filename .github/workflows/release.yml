@@ -39,8 +39,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p client/bin
-          curl -L -o client/bin/lan-play-darwin-arm64 https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-macos-arm64
+          # Note: spacemeowx2/switch-lan-play v0.2.3 does NOT have an arm64 binary
+          # Only x86_64 (macos) is available - arm64 Macs will use it via Rosetta
+          # If needed, both URLs download the same x86_64 binary to ensure availability
           curl -L -o client/bin/lan-play-darwin-amd64 https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-macos
+          curl -L -o client/bin/lan-play-darwin-arm64 https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-macos
           curl -L -o client/bin/lan-play-win32-amd64.exe https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-win64.exe
           curl -L -o client/bin/lan-play-linux-amd64 https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-linux
           chmod +x client/bin/lan-play-*
