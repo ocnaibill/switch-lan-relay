@@ -317,17 +317,62 @@ elements.btnTransmitter.addEventListener("click", async () => {
 });
 
 // Platform specific styling
-if (window.switchplay && window.switchplay.platform === 'darwin') {
+if (window.switchplay && window.switchplay.platform === "darwin") {
   // Hide custom window controls since macOS has native ones
-  const controls = document.getElementById('titlebar-controls');
+  const controls = document.getElementById("titlebar-controls");
   if (controls) {
-    controls.style.display = 'none'; // Hide our custom buttons
+    controls.style.display = "none"; // Hide our custom buttons
   }
 
   // Move title to the right to avoid overlapping with native traffic lights on the left
-  const titleDrag = document.getElementById('titlebar-drag');
+  const titleDrag = document.getElementById("titlebar-drag");
   if (titleDrag) {
-    titleDrag.style.justifyContent = 'flex-end';
-    titleDrag.style.paddingRight = '16px';
+    titleDrag.style.justifyContent = "flex-end";
+    titleDrag.style.paddingRight = "16px";
   }
+}
+
+// View Navigation Context
+const mainView = document.getElementById('main-view');
+const settingsView = document.getElementById('settings-view');
+const btnOpenSettings = document.getElementById('btn-open-settings');
+const btnCloseSettings = document.getElementById('btn-close-settings');
+
+if (btnOpenSettings && btnCloseSettings) {
+  btnOpenSettings.addEventListener('click', () => {
+    mainView.classList.add('hidden');
+    // Explicit inline overriding to show properly 
+    settingsView.classList.remove('hidden');
+    settingsView.style.display = 'flex';
+  });
+
+  btnCloseSettings.addEventListener('click', () => {
+    mainView.classList.remove('hidden');
+    settingsView.classList.add('hidden');
+    settingsView.style.display = 'none';
+    
+    // Save state explicitly when leaving settings to be safe
+    saveSettings();
+  });
+}
+
+// View Navigation Context
+const mainView = document.getElementById('main-view');
+const settingsView = document.getElementById('settings-view');
+const btnOpenSettings = document.getElementById('btn-open-settings');
+const btnCloseSettings = document.getElementById('btn-close-settings');
+
+if (btnOpenSettings && btnCloseSettings) {
+  btnOpenSettings.addEventListener('click', () => {
+    mainView.classList.add('hidden');
+    settingsView.classList.remove('hidden');
+  });
+
+  btnCloseSettings.addEventListener('click', () => {
+    mainView.classList.remove('hidden');
+    settingsView.classList.add('hidden');
+    
+    // Save state explicitly when leaving settings to be safe
+    saveSettings();
+  });
 }

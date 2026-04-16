@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -12,25 +12,25 @@ jobs:
   release:
     name: Build & Release
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
-          
+          go-version: "1.21"
+
       - name: Install Dependencies
         working-directory: client
         run: npm ci
@@ -44,7 +44,7 @@ jobs:
           curl -L -o client/bin/lan-play-win32-amd64.exe https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-win64.exe
           curl -L -o client/bin/lan-play-linux-amd64 https://github.com/spacemeowx2/switch-lan-play/releases/download/v0.2.3/lan-play-linux
           chmod +x client/bin/lan-play-*
-          
+
       - name: Set App Version from Git Tag
         shell: bash
         run: |

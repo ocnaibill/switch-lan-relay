@@ -62,66 +62,21 @@
 
     <!-- Main Content -->
     <main id="app">
-      <!-- Header Section -->
-      <section id="hero">
-        <div id="hero-glow"></div>
-        <h1 id="app-title">Switch<span class="accent">Play</span></h1>
-        <p id="app-subtitle" data-i18n="app-subtitle">
-          Connect, play, dominate — no configuration needed.
-        </p>
-      </section>
-
-      <!-- Settings Section -->
-      <section id="settings-card" class="card">
-        <div id="settings-header" class="pointer" onclick="document.getElementById('settings-content').classList.toggle('hidden')">
-          <span data-i18n="settings-title">⚙️ Settings</span>
-          <span class="chevron">▼</span>
+      <!-- MAIN VIEW -->
+      <div id="main-view">
+        <div style="position: absolute; right: 26px; top: 54px; z-index: 100;">
+          <button id="btn-open-settings" style="background:var(--bg-card);border:1px solid var(--border);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 6px rgba(0,0,0,0.1);font-size:20px;color:var(--text-secondary);" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-primary)';this.style.transform='rotate(45deg)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';this.style.transform='rotate(0deg)'" title="Settings">⚙️</button>
         </div>
-        <div id="settings-content" class="hidden">
-          <div class="input-group">
-            <label for="lang-select" data-i18n="setting-lang"
-              >Language / Idioma</label
-            >
-            <select id="lang-select" class="form-select">
-              <option value="en-US">English (US)</option>
-              <option value="pt-BR">Português (BR)</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label for="input-controlurl" data-i18n="setting-headscale"
-              >Headscale URL</label
-            >
-            <input
-              type="url"
-              id="input-controlurl"
-              placeholder="https://switch.yourdomain.com"
-            />
-          </div>
-          <div class="input-group">
-            <label for="input-authkey" data-i18n="setting-authkey"
-              >Tailscale Auth Key</label
-            >
-            <input
-              type="password"
-              id="input-authkey"
-              placeholder="hskey-auth-..."
-            />
-          </div>
-          <div class="input-group">
-            <label for="input-lanplay" data-i18n="setting-lanplay"
-              >LAN Play Server IP:PORT</label
-            >
-            <input
-              type="text"
-              id="input-lanplay"
-              placeholder="100.64.0.2:11451"
-              value="100.64.0.2:11451"
-            />
-          </div>
-        </div>
-      </section>
+        <!-- Header Section -->
+        <section id="hero">
+          <div id="hero-glow"></div>
+          <h1 id="app-title">Switch<span class="accent">Play</span></h1>
+          <p id="app-subtitle" data-i18n="app-subtitle">
+            Connect, play, dominate — no configuration needed.
+          </p>
+        </section>
 
-      <!-- Status Card -->
+        <!-- Status Card -->
       <section id="status-card">
         <div id="status-indicator">
           <div id="status-dot"></div>
@@ -182,24 +137,57 @@
         </div>
       </section>
 
-      <!-- Log Console -->
-      <section id="log-section">
-        <div id="log-header">
-          <span data-i18n="log-header">📋 Console</span>
-          <button
-            id="btn-clear-log"
-            class="btn-ghost"
-            data-i18n="btn-clear-log"
-          >
-            Limpar
+        <!-- Log Console -->
+        <section id="log-section">
+          <div id="log-header">
+            <span data-i18n="log-header">📋 Console</span>
+            <button
+              id="btn-clear-log"
+              class="btn-ghost"
+              data-i18n="btn-clear-log"
+            >
+              Limpar
+            </button>
+          </div>
+          <div id="log-output">
+            <p class="log-entry log-info" data-i18n="log-ready">
+              SwitchPlay v1.0.0 — Ready.
+            </p>
+          </div>
+        </section>
+      </div> <!-- End main-view -->
+
+      <!-- SETTINGS VIEW (Hidden by default) -->
+      <div id="settings-view" class="hidden" style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+        <div style="display: flex; align-items: center; margin-bottom: 24px; gap: 16px;">
+          <button id="btn-close-settings" style="background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-primary);border-radius:8px;padding:8px 16px;cursor:pointer;font-family:inherit;font-size:14px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--bg-card-hover)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg-elevated)'">
+            ⬅ <span data-i18n="btn-back">Voltar</span>
           </button>
+          <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary);" data-i18n="settings-title">⚙️ Settings</h2>
         </div>
-        <div id="log-output">
-          <p class="log-entry log-info" data-i18n="log-ready">
-            SwitchPlay v1.0.0 — Ready.
-          </p>
-        </div>
-      </section>
+
+        <section id="settings-card" class="card" style="flex: 1; flex-direction: column; display: flex; gap: 20px; cursor: default;">
+          <div class="input-group">
+            <label for="lang-select" data-i18n="setting-lang">Language / Idioma</label>
+            <select id="lang-select" class="form-select">
+              <option value="en-US">English (US)</option>
+              <option value="pt-BR">Português (BR)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="input-controlurl" data-i18n="setting-headscale">Headscale URL</label>
+            <input type="url" id="input-controlurl" placeholder="https://switch.yourdomain.com"/>
+          </div>
+          <div class="input-group">
+            <label for="input-authkey" data-i18n="setting-authkey">Tailscale Auth Key</label>
+            <input type="password" id="input-authkey" placeholder="hskey-auth-..."/>
+          </div>
+          <div class="input-group">
+            <label for="input-lanplay" data-i18n="setting-lanplay">LAN Play Server IP:PORT</label>
+            <input type="text" id="input-lanplay" placeholder="100.64.0.2:11451" value="100.64.0.2:11451"/>
+          </div>
+        </section>
+      </div> <!-- End settings-view -->
     </main>
 
     <script src="i18n.js"></script>
